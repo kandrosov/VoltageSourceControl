@@ -10,12 +10,38 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = VoltageSourceControl
 TEMPLATE = app
-
+INCLUDEPATH += $$(BOOST_INCLUDE_PATH)
+LIBS += -L$$(BOOST_LIBRARY_PATH)
 
 SOURCES += main.cpp\
-        MainWindow.cpp
+        MainWindow.cpp \
+    GpibStream.cc \
+    Keithley237.cc \
+    Keithley237Internals.cc \
+    Keithley6487.cc \
+    serialstream.cc \
+    ThreadSafeVoltageSource.cc \
+    date_time.cc \
+    log.cc \
+    VoltageSourceFactory.cc \
+    BaseConfig.cc
 
-HEADERS  += MainWindow.h
+HEADERS  += MainWindow.h \
+    FakeVoltageSource.h \
+    GpibStream.h \
+    IVoltageSource.h \
+    Keithley237.h \
+    Keithley237Internals.h \
+    Keithley6487.h \
+    serialstream.h \
+    ThreadSafeVoltageSource.h \
+    units.h \
+    date_time.h \
+    exception.h \
+    log.h \
+    VoltageSourceFactory.h \
+    ConfigParameters.h \
+    BaseConfig.h
 
 FORMS    += MainWindow.ui
 
