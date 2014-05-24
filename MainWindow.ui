@@ -6,9 +6,27 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>713</width>
-    <height>300</height>
+    <width>700</width>
+    <height>200</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>700</width>
+    <height>190</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>700</width>
+    <height>200</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Voltage source control</string>
@@ -20,10 +38,10 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>461</width>
-      <height>201</height>
+      <x>10</x>
+      <y>10</y>
+      <width>420</width>
+      <height>180</height>
      </rect>
     </property>
     <property name="currentIndex">
@@ -36,20 +54,23 @@
      <widget class="QDoubleSpinBox" name="doubleSpinBoxGoalVoltage">
       <property name="geometry">
        <rect>
-        <x>130</x>
-        <y>30</y>
-        <width>71</width>
-        <height>31</height>
+        <x>80</x>
+        <y>10</y>
+        <width>70</width>
+        <height>20</height>
        </rect>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
       <property name="decimals">
        <number>1</number>
       </property>
       <property name="minimum">
-       <double>-1000.000000000000000</double>
+       <double>-2000.000000000000000</double>
       </property>
       <property name="maximum">
-       <double>1000.000000000000000</double>
+       <double>2000.000000000000000</double>
       </property>
       <property name="singleStep">
        <double>10.000000000000000</double>
@@ -61,23 +82,31 @@
      <widget class="QPushButton" name="pushButtonEnableVoltage">
       <property name="geometry">
        <rect>
-        <x>160</x>
-        <y>120</y>
-        <width>95</width>
-        <height>31</height>
+        <x>180</x>
+        <y>110</y>
+        <width>90</width>
+        <height>30</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
       </property>
       <property name="text">
        <string>Enable</string>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
       </property>
      </widget>
      <widget class="QLabel" name="labelGoalVoltageTitle">
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>30</y>
-        <width>91</width>
-        <height>21</height>
+        <x>10</x>
+        <y>10</y>
+        <width>70</width>
+        <height>20</height>
        </rect>
       </property>
       <property name="text">
@@ -87,10 +116,10 @@
      <widget class="QLabel" name="labelGoalVoltageUnits">
       <property name="geometry">
        <rect>
-        <x>220</x>
-        <y>40</y>
-        <width>16</width>
-        <height>16</height>
+        <x>160</x>
+        <y>10</y>
+        <width>20</width>
+        <height>20</height>
        </rect>
       </property>
       <property name="text">
@@ -103,23 +132,31 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>270</x>
-        <y>120</y>
-        <width>95</width>
-        <height>31</height>
+        <x>300</x>
+        <y>110</y>
+        <width>90</width>
+        <height>30</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
       </property>
       <property name="text">
        <string>Disable</string>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
       </property>
      </widget>
      <widget class="QLabel" name="labelComplianceTitle">
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>70</y>
-        <width>81</width>
-        <height>21</height>
+        <x>10</x>
+        <y>40</y>
+        <width>70</width>
+        <height>20</height>
        </rect>
       </property>
       <property name="text">
@@ -129,35 +166,38 @@
      <widget class="QDoubleSpinBox" name="doubleSpinBoxCompliance">
       <property name="geometry">
        <rect>
-        <x>130</x>
-        <y>70</y>
-        <width>71</width>
-        <height>31</height>
+        <x>80</x>
+        <y>40</y>
+        <width>70</width>
+        <height>20</height>
        </rect>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
       <property name="decimals">
        <number>1</number>
       </property>
       <property name="minimum">
-       <double>-1000.000000000000000</double>
+       <double>0.100000000000000</double>
       </property>
       <property name="maximum">
-       <double>1000.000000000000000</double>
+       <double>10000.000000000000000</double>
       </property>
       <property name="singleStep">
        <double>10.000000000000000</double>
       </property>
       <property name="value">
-       <double>150.000000000000000</double>
+       <double>100.000000000000000</double>
       </property>
      </widget>
      <widget class="QLabel" name="labelComplianceUnits">
       <property name="geometry">
        <rect>
-        <x>210</x>
-        <y>70</y>
-        <width>21</width>
-        <height>21</height>
+        <x>160</x>
+        <y>40</y>
+        <width>20</width>
+        <height>20</height>
        </rect>
       </property>
       <property name="text">
@@ -167,11 +207,14 @@
      <widget class="QDoubleSpinBox" name="doubleSpinBoxVoltageStepUp">
       <property name="geometry">
        <rect>
-        <x>360</x>
-        <y>40</y>
-        <width>71</width>
-        <height>31</height>
+        <x>300</x>
+        <y>10</y>
+        <width>70</width>
+        <height>20</height>
        </rect>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
       <property name="decimals">
        <number>1</number>
@@ -192,10 +235,10 @@
      <widget class="QLabel" name="labelVoltageStepUpTitle">
       <property name="geometry">
        <rect>
-        <x>250</x>
-        <y>40</y>
-        <width>91</width>
-        <height>21</height>
+        <x>200</x>
+        <y>10</y>
+        <width>90</width>
+        <height>20</height>
        </rect>
       </property>
       <property name="text">
@@ -205,10 +248,10 @@
      <widget class="QLabel" name="labelVoltageStepUpUnits">
       <property name="geometry">
        <rect>
-        <x>440</x>
-        <y>50</y>
-        <width>16</width>
-        <height>16</height>
+        <x>380</x>
+        <y>10</y>
+        <width>20</width>
+        <height>20</height>
        </rect>
       </property>
       <property name="text">
@@ -218,11 +261,14 @@
      <widget class="QDoubleSpinBox" name="doubleSpinBoxVoltageStepDown">
       <property name="geometry">
        <rect>
-        <x>360</x>
-        <y>80</y>
-        <width>71</width>
-        <height>31</height>
+        <x>300</x>
+        <y>40</y>
+        <width>70</width>
+        <height>20</height>
        </rect>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
       <property name="decimals">
        <number>1</number>
@@ -243,10 +289,10 @@
      <widget class="QLabel" name="labelVoltageStepDownUnits">
       <property name="geometry">
        <rect>
-        <x>440</x>
-        <y>90</y>
-        <width>16</width>
-        <height>16</height>
+        <x>380</x>
+        <y>40</y>
+        <width>20</width>
+        <height>20</height>
        </rect>
       </property>
       <property name="text">
@@ -256,14 +302,68 @@
      <widget class="QLabel" name="labelVoltageStepDownTitle">
       <property name="geometry">
        <rect>
-        <x>250</x>
-        <y>80</y>
-        <width>91</width>
-        <height>21</height>
+        <x>200</x>
+        <y>40</y>
+        <width>90</width>
+        <height>20</height>
        </rect>
       </property>
       <property name="text">
        <string>Voltage step down</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="labelDelayTitle">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>70</y>
+        <width>70</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Delay</string>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="doubleSpinBoxDelay">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>70</y>
+        <width>70</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+      <property name="decimals">
+       <number>1</number>
+      </property>
+      <property name="minimum">
+       <double>0.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>100.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>1.000000000000000</double>
+      </property>
+      <property name="value">
+       <double>2.000000000000000</double>
+      </property>
+     </widget>
+     <widget class="QLabel" name="labelDelayUnits">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>70</y>
+        <width>20</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>s</string>
       </property>
      </widget>
     </widget>
@@ -279,23 +379,36 @@
    <widget class="QGroupBox" name="groupBoxStatus">
     <property name="geometry">
      <rect>
-      <x>470</x>
-      <y>20</y>
-      <width>251</width>
-      <height>151</height>
+      <x>440</x>
+      <y>40</y>
+      <width>250</width>
+      <height>150</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
     </property>
     <property name="title">
      <string>Status</string>
     </property>
+    <property name="flat">
+     <bool>false</bool>
+    </property>
     <widget class="QLabel" name="labelVoltageTitle">
      <property name="geometry">
       <rect>
-       <x>0</x>
+       <x>40</x>
        <y>90</y>
-       <width>111</width>
-       <height>21</height>
+       <width>60</width>
+       <height>20</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
      </property>
      <property name="text">
       <string>Voltage</string>
@@ -304,24 +417,37 @@
     <widget class="QLabel" name="labelVoltage">
      <property name="geometry">
       <rect>
-       <x>80</x>
+       <x>110</x>
        <y>90</y>
-       <width>41</width>
-       <height>21</height>
+       <width>70</width>
+       <height>20</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
      <property name="text">
-      <string>100.0</string>
+      <string>0.0</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
     <widget class="QLabel" name="labelCurrentUnits">
      <property name="geometry">
       <rect>
-       <x>170</x>
-       <y>110</y>
-       <width>21</width>
-       <height>21</height>
+       <x>190</x>
+       <y>120</y>
+       <width>20</width>
+       <height>20</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
      </property>
      <property name="text">
       <string>μA</string>
@@ -330,11 +456,16 @@
     <widget class="QLabel" name="labelVoltageUnits">
      <property name="geometry">
       <rect>
-       <x>170</x>
+       <x>190</x>
        <y>90</y>
-       <width>21</width>
-       <height>21</height>
+       <width>20</width>
+       <height>20</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
      </property>
      <property name="text">
       <string>V</string>
@@ -343,24 +474,37 @@
     <widget class="QLabel" name="labelCurrent">
      <property name="geometry">
       <rect>
-       <x>90</x>
-       <y>110</y>
-       <width>31</width>
-       <height>21</height>
+       <x>110</x>
+       <y>120</y>
+       <width>70</width>
+       <height>20</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
      <property name="text">
-      <string>10</string>
+      <string>0.0</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
     <widget class="QLabel" name="labelCurrentTitle">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>110</y>
-       <width>67</width>
-       <height>21</height>
+       <x>40</x>
+       <y>120</y>
+       <width>60</width>
+       <height>20</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
      </property>
      <property name="text">
       <string>Current</string>
@@ -370,15 +514,125 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>30</y>
-       <width>181</width>
-       <height>21</height>
+       <y>20</y>
+       <width>250</width>
+       <height>25</height>
       </rect>
      </property>
+     <property name="palette">
+      <palette>
+       <active>
+        <colorrole role="WindowText">
+         <brush brushstyle="SolidPattern">
+          <color alpha="255">
+           <red>0</red>
+           <green>255</green>
+           <blue>0</blue>
+          </color>
+         </brush>
+        </colorrole>
+        <colorrole role="Text">
+         <brush brushstyle="SolidPattern">
+          <color alpha="255">
+           <red>0</red>
+           <green>255</green>
+           <blue>0</blue>
+          </color>
+         </brush>
+        </colorrole>
+       </active>
+       <inactive>
+        <colorrole role="WindowText">
+         <brush brushstyle="SolidPattern">
+          <color alpha="255">
+           <red>0</red>
+           <green>255</green>
+           <blue>0</blue>
+          </color>
+         </brush>
+        </colorrole>
+        <colorrole role="Text">
+         <brush brushstyle="SolidPattern">
+          <color alpha="255">
+           <red>0</red>
+           <green>255</green>
+           <blue>0</blue>
+          </color>
+         </brush>
+        </colorrole>
+       </inactive>
+       <disabled>
+        <colorrole role="WindowText">
+         <brush brushstyle="SolidPattern">
+          <color alpha="255">
+           <red>120</red>
+           <green>120</green>
+           <blue>120</blue>
+          </color>
+         </brush>
+        </colorrole>
+        <colorrole role="Text">
+         <brush brushstyle="SolidPattern">
+          <color alpha="255">
+           <red>120</red>
+           <green>120</green>
+           <blue>120</blue>
+          </color>
+         </brush>
+        </colorrole>
+       </disabled>
+      </palette>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
      <property name="text">
-      <string>Voltage source disabled</string>
+      <string>HV disabled</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
      </property>
     </widget>
+   </widget>
+   <widget class="QComboBox" name="comboBoxVoltageSource">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>10</y>
+      <width>141</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="currentText">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelVoltageSourceTitle">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>10</y>
+      <width>100</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Voltage source</string>
+    </property>
    </widget>
   </widget>
  </widget>
