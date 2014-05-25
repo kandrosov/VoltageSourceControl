@@ -23,13 +23,38 @@
  */
 
 #include <QApplication>
+#include "exception.h"
+#include "ConfigParameters.h"
 #include "MainWindow.h"
+
+const std::string LOG_HEAD = "main";
+const std::string DEFAULT_LOG_FILE_NAME = "info.log";
+const std::string DEFAULT_ERROR_LOG_FILE_NAME = "error.log";
+const std::string DEFAULT_DEBUG_LOG_FILE_NAME = "debug.log";
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     MainWindow w;
+    try {
+        ConfigParameters& configParameters = ConfigParameters::ModifiableSingleton();
+        configParameters.setDirectory(".");
+        configParameters.setDebugFileName(DEFAULT_DEBUG_LOG_FILE_NAME);
+        configParameters.setErrorFileName(DEFAULT_ERROR_LOG_FILE_NAME);
+        configParameters.setLogFileName(DEFAULT_LOG_FILE_NAME);
+        vsc::LogDebug().open( configParameters.FullDebugFileName() );
+        vsc::LogError().open( configParameters.FullDebugFileName() );
+        vsc::LogInfo ().open( configParameters.FullLogFileName() );
+
+        vsc::LogInfo(LOG_HEAD) << "Starting... " << vsc::LogInfo::FullTimestampString() << std::endl;
+
+        configParameters.ReadConfigParameterFile();
+    } catch(vsc::exception& e) {
+        w.ReportError(e);
+    }
+
     w.show();
-    
-    return a.exec();
+    const int result = a.exec();
+    vsc::LogInfo(LOG_HEAD) << "Exiting... " << vsc::LogInfo::FullTimestampString() << std::endl;
+    return result;
 }

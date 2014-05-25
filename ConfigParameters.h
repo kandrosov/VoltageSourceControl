@@ -33,11 +33,13 @@
  */
 class ConfigParameters : public vsc::BaseConfig {
 public:
-    VSC_CONFIG_PARAMETER(std::string, Directory, "")
-    VSC_CONFIG_PARAMETER(std::string, LogFileName, "log.txt")
-    VSC_FULL_CONFIG_FILE_NAME(LogFileName)
+    VSC_CONFIG_PARAMETER(std::string, Directory, ".")
+    VSC_CONFIG_PARAMETER(std::string, ErrorFileName, "error.log")
+    VSC_FULL_CONFIG_FILE_NAME(ErrorFileName)
     VSC_CONFIG_PARAMETER(std::string, DebugFileName, "debug.log")
     VSC_FULL_CONFIG_FILE_NAME(DebugFileName)
+    VSC_CONFIG_PARAMETER(std::string, LogFileName, "info.log")
+    VSC_FULL_CONFIG_FILE_NAME(LogFileName)
 
     VSC_CONFIG_PARAMETER(std::string, VoltageSource, "Keithley237")
     VSC_CONFIG_PARAMETER(std::string, VoltageSourceDevice, "keithley")
@@ -56,8 +58,12 @@ public:
     }
 
 public:
+    void ReadConfigParameterFile() {
+        Read(FullFileName(fileName));
+    }
+
     void WriteConfigParameterFile() const {
-        Write(FullFileName("parameters.cfg"));
+        Write(FullFileName(fileName));
     }
 
 private:
@@ -65,5 +71,6 @@ private:
         return Directory() + "/" + fileName;
     }
     VSC_CONFIG_NAME("ConfigParameters")
-    ConfigParameters() {}
+    ConfigParameters() : fileName("parameters.cfg") {}
+    std::string fileName;
 };

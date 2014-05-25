@@ -443,7 +443,7 @@ private:
             const ValueType convertedValue = value * conversionFactor;
             s << boost::format(MODE_OUTPUT_FORMAT) % iter->first % convertedValue << std::endl;
         }
-        THROW_VSC_EXCEPTION(s.str());
+        THROW_VSC_EXCEPTION("Configuration error", s.str());
     }
 
 private:

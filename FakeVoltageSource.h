@@ -26,13 +26,19 @@
 #include "IVoltageSource.h"
 #include "log.h"
 #include "date_time.h"
+#include "exception.h"
 
 namespace vsc {
 
 class FakeVoltageSource : public IVoltageSource {
 public:
-    FakeVoltageSource(const Resistance& resistance)
-        : r(resistance), v(0.0 * volts) { }
+    FakeVoltageSource(const Resistance& resistance, const Time& connection_delay, bool generate_connection_error)
+        : r(resistance), v(0.0 * volts)
+    {
+        Sleep(connection_delay);
+        if(generate_connection_error)
+            THROW_VSC_EXCEPTION("Connection error", "Fake connection error.");
+    }
 
     /// \copydoc IVoltageSource::Set
     virtual Value Set(const Value& value) {

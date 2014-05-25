@@ -59,12 +59,12 @@ vsc::Keithley6487::Keithley6487(const std::string& deviceName, unsigned baudrate
         Send("*IDN?");
         const std::string identificationString = ReadString();
         if(identificationString.find(IDENTIFICATION_STRING_PREFIX) != 0)
-            THROW_VSC_EXCEPTION("Device connected to '" << deviceName << "' is not supported. Device identified it self"
-                                " as '" << identificationString << "'.");
+            THROW_VSC_EXCEPTION("Connection error", "Device connected to '" << deviceName << "' is not supported."
+                                " Device identified it self as '" << identificationString << "'.");
         Send("FUNC 'CURR'");
         Send("FORM:ELEM READ,VSO");
     } catch(std::ios_base::failure&) {
-        THROW_VSC_EXCEPTION("Unable to connect to the Keithley on '" << deviceName << "'.");
+        THROW_VSC_EXCEPTION("Connection error", "Unable to connect to the Keithley on '" << deviceName << "'.");
     }
 }
 
@@ -78,8 +78,8 @@ vsc::IVoltageSource::Value vsc::Keithley6487::Set(const Value& value)
 {
     const double voltage = value.Voltage / VOLTAGE_FACTOR;
     if(voltage > MAX_VOLTAGE)
-        THROW_VSC_EXCEPTION("Voltage " << voltage << " V is too high." << "Maximal allowed voltage is " << MAX_VOLTAGE
-                            << " V.");
+        THROW_VSC_EXCEPTION("Invalid parameters", "Voltage " << voltage << " V is too high."
+                            << "Maximal allowed voltage is " << MAX_VOLTAGE << " V.");
 
     try {
         Send("SOUR:VOLT:RANG", MAX_VOLTAGE_RANGE);
@@ -88,12 +88,12 @@ vsc::IVoltageSource::Value vsc::Keithley6487::Set(const Value& value)
         Send("SOUR:VOLT:STAT ON");
 
         if(!LastOperationIsCompleted())
-            THROW_VSC_EXCEPTION("Voltage was not set.");
+            THROW_VSC_EXCEPTION("Error on device", "Voltage was not set.");
         return value;
     } catch(TimeoutException&) {
-        THROW_VSC_EXCEPTION("Unable to connect to the Keithley to set a voltage.");
+        THROW_VSC_EXCEPTION("Connection error", "Unable to connect to the Keithley to set a voltage.");
     } catch(std::ios_base::failure&) {
-        THROW_VSC_EXCEPTION("Unable to connect to the Keithley to set a voltage.");
+        THROW_VSC_EXCEPTION("Connection error", "Unable to connect to the Keithley to set a voltage.");
     }
 }
 
@@ -113,7 +113,7 @@ void vsc::Keithley6487::Off()
 {
     Send("SOUR:VOLT:STAT OFF");
     if(!LastOperationIsCompleted())
-        THROW_VSC_EXCEPTION("Voltage is not turned off.");
+        THROW_VSC_EXCEPTION("Error on device", "Voltage is not turned off.");
 }
 
 std::string vsc::Keithley6487::ReadString()
@@ -138,7 +138,7 @@ std::istream& operator >>(std::istream& s, vsc::Keithley6487::Measurement& m)
     m.Current = current * CURRENT_FACTOR;
     s >> c;
     if(c != ',')
-        THROW_VSC_EXCEPTION("Keithley replay has an incorrect format.");
+        THROW_VSC_EXCEPTION("Connection error", "Keithley replay has an incorrect format.");
     double voltage;
     s >> voltage;
     m.Voltage = voltage * VOLTAGE_FACTOR;

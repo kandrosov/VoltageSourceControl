@@ -29,7 +29,7 @@ void vsc::BaseConfig::Read(const std::string& fileName)
 {
     std::ifstream f(fileName.c_str());
     if(!f.is_open())
-        THROW_VSC_EXCEPTION("Unable to read the configuration file '" << fileName << "'.");
+        THROW_VSC_EXCEPTION("Read file error", "Unable to read the configuration file '" << fileName << "'.");
     while(f.good()) {
         std::string line;
         std::getline(f, line);
@@ -52,7 +52,8 @@ void vsc::BaseConfig::Write(const std::string& fileName) const
 {
     std::ofstream f(fileName.c_str());
     if(!f.is_open())
-        THROW_VSC_EXCEPTION("Unable to write the configuration into the file '" << fileName << "'.");
+        THROW_VSC_EXCEPTION("Write file error", "Unable to write the configuration into the file '"
+                            << fileName << "'.");
     for(Map::const_iterator iter = parameters.begin(); iter != parameters.end(); ++iter) {
         f << iter->first << " " << iter->second << std::endl;
     }

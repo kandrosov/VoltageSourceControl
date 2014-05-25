@@ -25,6 +25,8 @@
 #pragma once
 
 #include <QMainWindow>
+#include "exception.h"
+#include "VoltageSourceFactory.h"
 
 namespace Ui {
 class MainWindow;
@@ -36,11 +38,25 @@ class MainWindow : public QMainWindow
     
 public:
     explicit MainWindow(QWidget *parent = 0);
+    void ReportError(const vsc::exception& error);
+    void ReportUpdate(const std::string& status_message, const std::string& detailed_message);
+    void UpdateVoltageSource();
     ~MainWindow();
-    
+
+signals:
+    void ConnectSuccessful();
+    void ConnectFailed(const vsc::exception& e);
+
 private slots:
     void on_pushButtonEnableVoltage_clicked();
 
+    void on_pushButtonConnect_clicked();
+
+    void on_connectSuccessful();
+    void on_connectFailed(const vsc::exception& e);
+
 private:
     Ui::MainWindow *ui;
+    QPalette errorLabelPalette, normalLabelPalette;
+    vsc::VoltageSourceFactory::Pointer voltageSource;
 };

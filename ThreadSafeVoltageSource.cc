@@ -30,8 +30,8 @@ vsc::ThreadSafeVoltageSource::ThreadSafeVoltageSource(IVoltageSource* aVoltageSo
     : voltageSource(aVoltageSource), saveMeasurements(_saveMeasurements), isOn(false)
 {
     if(!aVoltageSource)
-        THROW_VSC_EXCEPTION("Voltage source can't be null.")
-    }
+        THROW_VSC_EXCEPTION("Ivalid parameters", "Voltage source can't be null.");
+}
 
 vsc::IVoltageSource::Value vsc::ThreadSafeVoltageSource::Set(const Value& value)
 {
@@ -62,9 +62,10 @@ bool vsc::ThreadSafeVoltageSource::GradualSet(const Value& value, const vsc::Ele
         const vsc::Time& delayBetweenSteps, bool checkForCompliance)
 {
     if(step <= 0.0 * vsc::volts)
-        THROW_VSC_EXCEPTION("Invalid voltage step = " << step << ". The voltage step should be greater then zero.");
+        THROW_VSC_EXCEPTION("Invalid parameters", "Invalid voltage step = " << step << ". The voltage step should be"
+                            " greater then zero.");
     if(delayBetweenSteps < 0.0 * vsc::seconds)
-        THROW_VSC_EXCEPTION("Invalid delay between the voltage switch = " << delayBetweenSteps
+        THROW_VSC_EXCEPTION("Invalid parameters", "Invalid delay between the voltage switch = " << delayBetweenSteps
                             << ". The delay should be positive or zero.");
 
     const std::lock_guard<std::recursive_mutex> lock(mutex);

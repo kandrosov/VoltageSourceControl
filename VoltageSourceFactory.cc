@@ -43,7 +43,7 @@ typedef std::map<std::string, Maker> MakerMap;
 
 static vsc::IVoltageSource* FakeVoltageSourceMaker(const ConfigParameters&)
 {
-    return new vsc::FakeVoltageSource(100.0 * vsc::mega * vsc::ohms);
+    return new vsc::FakeVoltageSource(100.0 * vsc::mega * vsc::ohms, 5.0 * vsc::seconds, true);
 }
 
 static MakerMap CreateMakerMap()
@@ -61,12 +61,22 @@ static vsc::IVoltageSource* CreateVoltageSource()
     const ConfigParameters& configParameters = ConfigParameters::Singleton();
     MakerMap::const_iterator iter = makerMap.find(configParameters.VoltageSource());
     if(iter == makerMap.end())
-        THROW_VSC_EXCEPTION("Voltage source '" << configParameters.VoltageSource() << "' not found.");
+        THROW_VSC_EXCEPTION("Configuration error", "Voltage source '" << configParameters.VoltageSource()
+                            << "' not found.");
     return iter->second(configParameters);
 }
 
-vsc::VoltageSourceFactory::VoltageSourcePtr vsc::VoltageSourceFactory::Get()
+vsc::VoltageSourceFactory::Pointer vsc::VoltageSourceFactory::Get()
 {
-    static VoltageSourcePtr voltageSource(new ThreadSafeVoltageSource(CreateVoltageSource()));
+    static Pointer voltageSource(new ThreadSafeVoltageSource(CreateVoltageSource()));
     return voltageSource;
+}
+
+const vsc::VoltageSourceFactory::NameSet& vsc::VoltageSourceFactory::GetNames()
+{
+    static NameSet voltageSources;
+    if(!voltageSources.size()) {
+        voltageSources.insert("Fake");
+    }
+    return voltageSources;
 }

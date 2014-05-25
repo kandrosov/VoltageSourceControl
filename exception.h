@@ -28,34 +28,33 @@
 #include <sstream>
 
 #ifdef __GNUG__
-#define THROW_VSC_EXCEPTION(msg)   {    \
-        std::stringstream ss;               \
-        ss << msg;                          \
-        throw vsc::exception(__PRETTY_FUNCTION__, ss.str()); }
+#define THROW_VSC_EXCEPTION(short_msg, msg) { \
+        std::stringstream ss, ss_short; \
+        ss << msg; ss_short << short_msg; \
+        throw vsc::exception(__PRETTY_FUNCTION__, ss_short.str(), ss.str()); }
 #else
-#define THROW_VSC_EXCEPTION(msg)   {    \
-        std::stringstream ss;               \
-        ss << msg;                          \
-        throw vsc::exception(__FUNCTION__, ss.str()); }
+#define THROW_VSC_EXCEPTION(short_msg, msg) { \
+        std::stringstream ss, ss_short; \
+        ss << msg; ss_short << short_msg; \
+        throw vsc::exception(__FUNCTION__, ss_short.str(), ss.str()); }
 
 #endif
 
 namespace vsc {
 class exception : public std::exception {
 public:
-    exception(const std::string& header, const std::string& message) : hdr(header), msg(message) {}
+    exception(const std::string& header, const std::string& short_message, const std::string& message)
+        : hdr(header), short_msg(short_message), msg(message), full_msg("[" + hdr + "] " + msg) {}
     virtual ~exception() throw() {}
-    virtual const char* what() const throw() {
-        return ("[" + hdr + "] " + msg).c_str();
-    }
-    const std::string& header() const {
-        return hdr;
-    }
-    const std::string& message() const {
-        return msg;
-    }
+    virtual const char* what() const throw() { return full_msg.c_str(); }
+    const std::string& header() const { return hdr; }
+    const std::string& short_message() const {  return short_msg; }
+    const std::string& message() const { return msg; }
+    const std::string& full_message() const { return full_msg; }
 private:
     std::string hdr;
+    std::string short_msg;
     std::string msg;
+    std::string full_msg;
 };
 } // vsc

@@ -47,4 +47,5 @@ FORMS    += MainWindow.ui
 
 OTHER_FILES += \
     README.md \
-    LICENSE
+    LICENSE \
+    parameters.cfg
