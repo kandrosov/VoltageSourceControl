@@ -55,6 +55,8 @@ vsc::IVoltageSource::Measurement vsc::ThreadSafeVoltageSource::Measure()
     const IVoltageSource::Measurement measurement = voltageSource->Measure();
     if(saveMeasurements)
         measurements.push_back(measurement);
+    if(onMeasurement)
+        onMeasurement(measurement);
     return measurement;
 }
 

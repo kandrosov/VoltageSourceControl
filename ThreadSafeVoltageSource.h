@@ -24,7 +24,7 @@
 #pragma once
 
 #include <list>
-#include <boost/scoped_ptr.hpp>
+#include <memory>
 #include <mutex>
 #include <boost/utility.hpp>
 
@@ -39,6 +39,9 @@ class ThreadSafeVoltageSource : public IVoltageSource, private boost::noncopyabl
 public:
     /// Measurement collection type.
     typedef std::list<IVoltageSource::Measurement> MeasurementCollection;
+
+    /// Type of callback for measurement event.
+    typedef std::function<void (const IVoltageSource::Measurement&)> OnMeasurementCallback;
 
     /*!
      * \brief ThreadSafeVoltageSource constructor.
@@ -85,13 +88,17 @@ public:
      */
     void unlock();
 
+    /// Set callback that will be called after each measurement operation.
+    void SetOnMeasurementCallback(const OnMeasurementCallback& _onMeasurement) { onMeasurement = _onMeasurement; }
+
 private:
     std::recursive_mutex mutex;
-    boost::scoped_ptr<IVoltageSource> voltageSource;
+    std::unique_ptr<IVoltageSource> voltageSource;
     bool saveMeasurements;
     MeasurementCollection measurements;
     Value currentValue;
     bool isOn;
+    OnMeasurementCallback onMeasurement;
 };
 
 }

@@ -24,7 +24,7 @@
 #pragma once
 
 #include <string>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "IVoltageSource.h"
 #include "serialstream.h"
 

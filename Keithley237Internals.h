@@ -25,10 +25,10 @@
 
 #include <sstream>
 #include <map>
+#include <memory>
 #include <boost/mpl/vector.hpp>
 #include <boost/mpl/size.hpp>
 #include <boost/mpl/at.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/bimap.hpp>
 #include <boost/format.hpp>
 

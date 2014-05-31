@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     date_time.cc \
     log.cc \
     VoltageSourceFactory.cc \
-    BaseConfig.cc
+    BaseConfig.cc \
+    Controller.cc
 
 HEADERS  += MainWindow.h \
     FakeVoltageSource.h \
@@ -41,7 +42,8 @@ HEADERS  += MainWindow.h \
     log.h \
     VoltageSourceFactory.h \
     ConfigParameters.h \
-    BaseConfig.h
+    BaseConfig.h \
+    Controller.h
 
 FORMS    += MainWindow.ui
 

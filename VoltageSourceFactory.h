@@ -24,13 +24,13 @@
 #pragma once
 
 #include <set>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "ThreadSafeVoltageSource.h"
 
 namespace vsc {
 class VoltageSourceFactory {
 public:
-    typedef boost::shared_ptr<ThreadSafeVoltageSource> Pointer;
+    typedef std::shared_ptr<ThreadSafeVoltageSource> Pointer;
     typedef std::set<std::string> NameSet;
     static Pointer Get();
     static const NameSet& GetNames();
