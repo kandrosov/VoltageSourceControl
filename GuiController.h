@@ -1,8 +1,8 @@
 /*!
- * \file MainWindow.h
- * \brief Definition of MainWindow class.
+ * \file GuiController.h
+ * \brief Definition of GuiController class.
  * \author Konstantin Androsov (INFN Pisa, Siena University)
- * \date 2014-05-24 created
+ * \date 2014-06-15 created
  *
  * Copyright 2014 Konstantin Androsov <konstantin.androsov@gmail.com>
  *
@@ -24,36 +24,28 @@
 
 #pragma once
 
-#include <QMainWindow>
-#include "exception.h"
-#include "Controller.h"
+#include <QObject>
+#include <thread>
+#include "MainWindow.h"
 
-namespace Ui {
-class MainWindow;
-}
-
-class MainWindow : public QMainWindow
+class GuiController : public QObject
 {
     Q_OBJECT
-    
 public:
-    explicit MainWindow(vsc::Controller& _controller);
-    void ReportError(const vsc::exception& error);
-    void ReportUpdate(const std::string& status_message, const std::string& detailed_message);
-    void UpdateVoltageSource();
-    ~MainWindow();
-
-private slots:
-    void on_pushButtonEnableVoltage_clicked();
-
-    void on_pushButtonConnect_clicked();
-
-public slots:
-    void onConnectSuccessful();
-    void onConnectFailed(const vsc::exception& e);
+    explicit GuiController();
+    virtual ~GuiController();
+    MainWindow& getMainWindow() { return mainWindow; }
+    
+signals:
+    void ConnectSuccessful();
+    void ConnectFailed(const vsc::exception& e);
 
 private:
-    Ui::MainWindow *ui;
-    QPalette errorLabelPalette, normalLabelPalette;
-    vsc::Controller *controller;
+    void _ConnectSuccessful();
+    void _ConnectFailed(const vsc::exception& e);
+
+private:
+    vsc::Controller controller;
+    std::thread controllerThread;
+    MainWindow mainWindow;
 };

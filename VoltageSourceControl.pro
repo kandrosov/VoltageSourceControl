@@ -6,12 +6,15 @@
 
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+#greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT += widgets
+
 
 TARGET = VoltageSourceControl
 TEMPLATE = app
-INCLUDEPATH += $$(BOOST_INCLUDE_PATH)
-LIBS += -L$$(BOOST_LIBRARY_PATH)
+QMAKE_CXXFLAGS = -std=c++11
+
+LIBS += -lboost_system -lboost_date_time
 
 SOURCES += main.cpp\
         MainWindow.cpp \
@@ -25,7 +28,8 @@ SOURCES += main.cpp\
     log.cc \
     VoltageSourceFactory.cc \
     BaseConfig.cc \
-    Controller.cc
+    Controller.cc \
+    GuiController.cpp
 
 HEADERS  += MainWindow.h \
     FakeVoltageSource.h \
@@ -43,7 +47,8 @@ HEADERS  += MainWindow.h \
     VoltageSourceFactory.h \
     ConfigParameters.h \
     BaseConfig.h \
-    Controller.h
+    Controller.h \
+    GuiController.h
 
 FORMS    += MainWindow.ui
 

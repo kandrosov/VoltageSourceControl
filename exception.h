@@ -37,12 +37,12 @@
         std::stringstream ss, ss_short; \
         ss << msg; ss_short << short_msg; \
         throw vsc::exception(__FUNCTION__, ss_short.str(), ss.str()); }
-
 #endif
 
 namespace vsc {
 class exception : public std::exception {
 public:
+    explicit exception() {}
     exception(const std::string& header, const std::string& short_message, const std::string& message)
         : hdr(header), short_msg(short_message), msg(message), full_msg("[" + hdr + "] " + msg) {}
     virtual ~exception() throw() {}

@@ -22,6 +22,7 @@
  * along with VoltageSourceControl.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <functional>
 #include "log.h"
 #include "ConfigParameters.h"
 #include "MainWindow.h"
@@ -29,13 +30,9 @@
 
 const std::string LOG_HEAD = "main";
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+MainWindow::MainWindow(vsc::Controller& _controller) :
+    QMainWindow(nullptr), ui(new Ui::MainWindow), controller(&_controller)
 {
-    QObject::connect(this, SIGNAL(ConnectSuccessful()), this, SLOT(on_connectSuccessful()));
-    QObject::connect(this, SIGNAL(ConnectFailed(vsc::exception)), this, SLOT(on_connectFailed(vsc::exception)));
-
     ui->setupUi(this);
     ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tabIV), false);
 
@@ -51,6 +48,8 @@ MainWindow::MainWindow(QWidget *parent) :
     const auto& voltageSources = vsc::VoltageSourceFactory::GetNames();
     for(const auto& voltageSource : voltageSources)
         ui->comboBoxVoltageSource->addItem(QString::fromStdString(voltageSource));
+
+
 }
 
 void MainWindow::ReportError(const vsc::exception& error)
@@ -58,7 +57,7 @@ void MainWindow::ReportError(const vsc::exception& error)
     vsc::LogError(error.header()) << "ERROR: " << error.message() << std::endl;
     ui->labelStatus->setText(QString::fromStdString(error.short_message()));
     ui->labelStatus->setPalette(errorLabelPalette);
-    ui->statusBar->showMessage(QString::fromStdString(error.full_message()));
+    ui->statusBar->showMessage(QString::fromStdString(error.message()));
 }
 
 void MainWindow::ReportUpdate(const std::string& status_message, const std::string& detailed_message)
@@ -75,13 +74,8 @@ void MainWindow::UpdateVoltageSource()
     const std::string newName = ui->comboBoxVoltageSource->currentText().toStdString();
     configParameters.setVoltageSource(newName);
     ReportUpdate("Connecting...", "Connecting to the voltage source.");
-    try {
-        voltageSource = vsc::VoltageSourceFactory::Get();
-    } catch(vsc::exception& e) {
-        ReportError(e);
-        return;
-    }
-    ui->pushButtonEnableVoltage->setEnabled(true);
+    ui->pushButtonConnect->setEnabled(false);
+    controller->SendCommand(vsc::Controller::Connect);
 }
 
 MainWindow::~MainWindow()
@@ -89,16 +83,17 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_connectSuccessful()
+void MainWindow::onConnectSuccessful()
 {
+    ui->pushButtonConnect->setEnabled(true);
     ui->pushButtonEnableVoltage->setEnabled(true);
 }
 
-void MainWindow::on_connectFailed(const vsc::exception& e)
+void MainWindow::onConnectFailed(const vsc::exception& e)
 {
     ReportError(e);
+    ui->pushButtonConnect->setEnabled(true);
 }
-
 
 void MainWindow::on_pushButtonEnableVoltage_clicked()
 {

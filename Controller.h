@@ -37,25 +37,38 @@ public:
     enum Command { Exit, Connect, Disconnect, EnableVoltage, DisableVoltage };
     typedef std::function<void (const IVoltageSource::Measurement&)> OnMeasurementCallback;
     typedef std::function<void (const vsc::exception&)> OnErrorCallback;
+    typedef std::function<void ()> OnEventCallback;
     typedef VoltageSourceFactory::Pointer VoltageSourcePtr;
     typedef void (Controller::* CommandHandler)();
 
 private:
     typedef std::vector<OnMeasurementCallback> MeasurementCallbackVector;
     typedef std::vector<OnErrorCallback> ErrorCallbackVector;
+    typedef std::vector<OnEventCallback> EventCallbackVector;
 
     static CommandHandler GetCommandHandler(Command command);
 
 public:
-    void AddOnMeasurementCallback(const OnMeasurementCallback& callback);
-    void AddOnComplianceCallback(const OnMeasurementCallback& callback);
-    void AddOnErrorCallback(const OnErrorCallback& callback);
+    Controller();
+    ~Controller();
+    void AddOnMeasurementCallback(const OnMeasurementCallback& callback) { AddCallback(onMeasurement, callback); }
+    void AddOnComplianceCallback(const OnMeasurementCallback& callback)  { AddCallback(onCompliance, callback); }
+    void AddOnErrorCallback(const OnErrorCallback& callback) { AddCallback(onError, callback); }
+    void AddOnConnectSuccessfulCallback(const OnEventCallback& callback) { AddCallback(onConnectSuccessful, callback); }
+    void AddOnConnectFailedCallback(const OnErrorCallback& callback) { AddCallback(onConnectFailed, callback); }
 
     void operator()();
     void SendCommand(Command command);
 
 private:
     void onVoltageSourceMeasurement(const IVoltageSource::Measurement& measurement);
+
+    template<typename Callback>
+    void AddCallback(std::vector<Callback>& callbacks, const Callback& callback)
+    {
+        std::lock_guard<std::recursive_mutex> lock(mutex);
+        callbacks.push_back(callback);
+    }
 
     template<typename CallbackVector, typename ...Arguments>
     void Call(const CallbackVector& callbacks, Arguments... arguments)
@@ -73,11 +86,13 @@ private:
 
 private:
     MeasurementCallbackVector onMeasurement, onCompliance;
-    ErrorCallbackVector onError;
+    ErrorCallbackVector onError, onConnectFailed;
+    EventCallbackVector onConnectSuccessful;
     std::recursive_mutex mutex;
     std::condition_variable_any controlStateChange;
     std::queue<Command> commandQueue;
     VoltageSourcePtr voltageSource;
+    bool canRun, isRunning;
 };
 
 } // vsc

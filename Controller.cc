@@ -41,29 +41,47 @@ Controller::CommandHandler Controller::GetCommandHandler(Command command)
     return commandMap.at(command);
 }
 
-void Controller::AddOnMeasurementCallback(const OnMeasurementCallback& callback)
-{
-    onMeasurement.push_back(callback);
-}
+Controller::Controller()
+    : canRun(true), isRunning(false)
+{}
 
-void Controller::AddOnComplianceCallback(const OnMeasurementCallback& callback)
+Controller::~Controller()
 {
-    onCompliance.push_back(callback);
-}
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    if(isRunning)
+        THROW_VSC_EXCEPTION("Internal error", "Invalid usage. The object should not be destroyed while working thread is still running.");
 
-void Controller::AddOnErrorCallback(const OnErrorCallback& callback)
-{
-    onError.push_back(callback);
 }
 
 void Controller::operator()()
 {
+    std::unique_lock<std::recursive_mutex> lock(mutex);
+    isRunning = true;
+    while(canRun) {
+        controlStateChange.wait(lock);
+        while(commandQueue.size()) {
+            const Command command = commandQueue.front();
+            commandQueue.pop();
+            const CommandHandler handler = GetCommandHandler(command);
+            try {
+                (this->*handler)();
+            } catch(vsc::exception& e) {
+                Call(onError, e);
+            }
+        }
+    }
+
+    isRunning = false;
 
 }
 
 void Controller::SendCommand(Command command)
 {
-    commandQueue.push(command);
+    {
+        std::lock_guard<std::recursive_mutex> lock(mutex);
+        commandQueue.push(command);
+    }
+    controlStateChange.notify_one();
 }
 
 void Controller::onVoltageSourceMeasurement(const IVoltageSource::Measurement& measurement)
@@ -73,12 +91,17 @@ void Controller::onVoltageSourceMeasurement(const IVoltageSource::Measurement& m
 
 void Controller::doExit()
 {
-
+    canRun = false;
 }
 
 void Controller::doConnect()
 {
-
+    try {
+        voltageSource = vsc::VoltageSourceFactory::Get();
+        Call(onConnectSuccessful);
+    } catch(vsc::exception& e) {
+        Call(onConnectFailed, e);
+    }
 }
 
 void Controller::doDisconnect()

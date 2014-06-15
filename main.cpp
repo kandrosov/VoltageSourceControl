@@ -25,7 +25,7 @@
 #include <QApplication>
 #include "exception.h"
 #include "ConfigParameters.h"
-#include "MainWindow.h"
+#include "GuiController.h"
 
 const std::string LOG_HEAD = "main";
 const std::string DEFAULT_LOG_FILE_NAME = "info.log";
@@ -35,7 +35,7 @@ const std::string DEFAULT_DEBUG_LOG_FILE_NAME = "debug.log";
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
+    GuiController guiController;
     try {
         ConfigParameters& configParameters = ConfigParameters::ModifiableSingleton();
         configParameters.setDirectory(".");
@@ -50,10 +50,9 @@ int main(int argc, char *argv[])
 
         configParameters.ReadConfigParameterFile();
     } catch(vsc::exception& e) {
-        w.ReportError(e);
+        guiController.getMainWindow().ReportError(e);
     }
 
-    w.show();
     const int result = a.exec();
     vsc::LogInfo(LOG_HEAD) << "Exiting... " << vsc::LogInfo::FullTimestampString() << std::endl;
     return result;
