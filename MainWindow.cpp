@@ -23,6 +23,7 @@
  */
 
 #include <functional>
+#include <QCloseEvent>
 #include "log.h"
 #include "ConfigParameters.h"
 #include "MainWindow.h"
@@ -49,7 +50,7 @@ MainWindow::MainWindow(vsc::Controller& _controller) :
     for(const auto& voltageSource : voltageSources)
         ui->comboBoxVoltageSource->addItem(QString::fromStdString(voltageSource));
 
-
+    SetControlStatus(GuiControlStatus::Disconnected);
 }
 
 void MainWindow::ReportError(const vsc::exception& error)
@@ -62,7 +63,7 @@ void MainWindow::ReportError(const vsc::exception& error)
 
 void MainWindow::ReportUpdate(const std::string& status_message, const std::string& detailed_message)
 {
-    vsc::LogError(LOG_HEAD) << detailed_message << std::endl;
+    vsc::LogInfo(LOG_HEAD) << detailed_message << std::endl;
     ui->labelStatus->setText(QString::fromStdString(status_message));
     ui->labelStatus->setPalette(normalLabelPalette);
     ui->statusBar->showMessage(QString::fromStdString(detailed_message));
@@ -74,8 +75,38 @@ void MainWindow::UpdateVoltageSource()
     const std::string newName = ui->comboBoxVoltageSource->currentText().toStdString();
     configParameters.setVoltageSource(newName);
     ReportUpdate("Connecting...", "Connecting to the voltage source.");
-    ui->pushButtonConnect->setEnabled(false);
-    controller->SendCommand(vsc::Controller::Connect);
+    SetControlStatus(GuiControlStatus::Connecting);
+    controller->SendCommand(vsc::Controller::Command::Connect);
+}
+
+void MainWindow::SetControlStatus(GuiControlStatus s)
+{
+    const bool connected = s == GuiControlStatus::Connected;
+    const bool disconnected = s == GuiControlStatus::Disconnected;
+    const bool not_in_progress = connected || disconnected;
+
+    ui->pushButtonConnect->setEnabled(disconnected);
+    ui->pushButtonDisconnect->setEnabled(connected);
+    ui->pushButtonEnableVoltage->setEnabled(connected);
+
+    ui->comboBoxVoltageSource->setEnabled(not_in_progress);
+    ui->doubleSpinBoxCompliance->setEnabled(not_in_progress);
+    ui->doubleSpinBoxDelay->setEnabled(not_in_progress);
+    ui->doubleSpinBoxGoalVoltage->setEnabled(not_in_progress);
+    ui->doubleSpinBoxVoltageStepDown->setEnabled(not_in_progress);
+    ui->doubleSpinBoxVoltageStepUp->setEnabled(not_in_progress);
+
+    currentControlStatus = s;
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if(currentControlStatus != GuiControlStatus::Disconnected) {
+        const vsc::exception error("main", "Can't exit", "Can't exit while connected to the voltage source");
+        ReportError(error);
+        event->ignore();
+    } else
+        event->accept();
 }
 
 MainWindow::~MainWindow()
@@ -85,14 +116,26 @@ MainWindow::~MainWindow()
 
 void MainWindow::onConnectSuccessful()
 {
-    ui->pushButtonConnect->setEnabled(true);
-    ui->pushButtonEnableVoltage->setEnabled(true);
+    ReportUpdate("Connected", "Successfully connected to the voltage source.");
+    SetControlStatus(GuiControlStatus::Connected);
 }
 
 void MainWindow::onConnectFailed(const vsc::exception& e)
 {
     ReportError(e);
-    ui->pushButtonConnect->setEnabled(true);
+    SetControlStatus(GuiControlStatus::Disconnected);
+}
+
+void MainWindow::onDisconnectSuccessful()
+{
+    ReportUpdate("Disconnected", "Successfully disconnected from the voltage source.");
+    SetControlStatus(GuiControlStatus::Disconnected);
+}
+
+void MainWindow::onDisconnectFailed(const vsc::exception& e)
+{
+    ReportError(e);
+    SetControlStatus(GuiControlStatus::Disconnected);
 }
 
 void MainWindow::on_pushButtonEnableVoltage_clicked()
@@ -103,4 +146,11 @@ void MainWindow::on_pushButtonEnableVoltage_clicked()
 void MainWindow::on_pushButtonConnect_clicked()
 {
     UpdateVoltageSource();
+}
+
+void MainWindow::on_pushButtonDisconnect_clicked()
+{
+    ReportUpdate("Disconnecting...", "Disconnecting from the voltage source.");
+    SetControlStatus(GuiControlStatus::Disconnecting);
+    controller->SendCommand(vsc::Controller::Command::Disconnect);
 }

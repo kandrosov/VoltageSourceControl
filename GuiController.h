@@ -39,10 +39,14 @@ public:
 signals:
     void ConnectSuccessful();
     void ConnectFailed(const vsc::exception& e);
+    void DisconnectSuccessful();
+    void DisconnectFailed(const vsc::exception& e);
 
 private:
     void _ConnectSuccessful();
     void _ConnectFailed(const vsc::exception& e);
+    void _DisconnectSuccessful();
+    void _DisconnectFailed(const vsc::exception& e);
 
 private:
     vsc::Controller controller;

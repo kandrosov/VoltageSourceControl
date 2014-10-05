@@ -43,7 +43,7 @@ typedef std::map<std::string, Maker> MakerMap;
 
 static vsc::IVoltageSource* FakeVoltageSourceMaker(const ConfigParameters&)
 {
-    return new vsc::FakeVoltageSource(100.0 * vsc::mega * vsc::ohms, 5.0 * vsc::seconds, true);
+    return new vsc::FakeVoltageSource(100.0 * vsc::mega * vsc::ohms, 5.0 * vsc::seconds, false, true, false);
 }
 
 static MakerMap CreateMakerMap()
@@ -66,10 +66,9 @@ static vsc::IVoltageSource* CreateVoltageSource()
     return iter->second(configParameters);
 }
 
-vsc::VoltageSourceFactory::Pointer vsc::VoltageSourceFactory::Get()
+vsc::VoltageSourceFactory::Pointer vsc::VoltageSourceFactory::Create()
 {
-    static Pointer voltageSource(new ThreadSafeVoltageSource(CreateVoltageSource()));
-    return voltageSource;
+    return Pointer(new ThreadSafeVoltageSource(CreateVoltageSource()));
 }
 
 const vsc::VoltageSourceFactory::NameSet& vsc::VoltageSourceFactory::GetNames()

@@ -34,18 +34,22 @@ GuiController::GuiController() :
     using namespace std::placeholders;
     controller.AddOnConnectSuccessfulCallback(std::bind(&GuiController::_ConnectSuccessful, this));
     controller.AddOnConnectFailedCallback(std::bind(&GuiController::_ConnectFailed, this, _1));
+    controller.AddOnDisconnectSuccessfulCallback(std::bind(&GuiController::_DisconnectSuccessful, this));
+    controller.AddOnDisconnectFailedCallback(std::bind(&GuiController::_DisconnectFailed, this, _1));
 
     qRegisterMetaType<vsc::exception>();
 
     QObject::connect(this, SIGNAL(ConnectSuccessful()), &mainWindow, SLOT(onConnectSuccessful()));
     QObject::connect(this, SIGNAL(ConnectFailed(vsc::exception)), &mainWindow, SLOT(onConnectFailed(vsc::exception)));
+    QObject::connect(this, SIGNAL(DisconnectSuccessful()), &mainWindow, SLOT(onDisconnectSuccessful()));
+    QObject::connect(this, SIGNAL(DisconnectFailed(vsc::exception)), &mainWindow, SLOT(onDisconnectFailed(vsc::exception)));
 
     mainWindow.show();
 }
 
 GuiController::~GuiController()
 {
-    controller.SendCommand(vsc::Controller::Exit);
+    controller.SendCommand(vsc::Controller::Command::Exit);
     controllerThread.join();
 }
 
@@ -57,4 +61,14 @@ void GuiController::_ConnectSuccessful()
 void GuiController::_ConnectFailed(const vsc::exception& e)
 {
     emit ConnectFailed(e);
+}
+
+void GuiController::_DisconnectSuccessful()
+{
+    emit DisconnectSuccessful();
+}
+
+void GuiController::_DisconnectFailed(const vsc::exception& e)
+{
+    emit DisconnectFailed(e);
 }

@@ -32,6 +32,8 @@ namespace Ui {
 class MainWindow;
 }
 
+enum class GuiControlStatus { Disconnected, Connecting, Disconnecting, Connected };
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -43,17 +45,28 @@ public:
     void UpdateVoltageSource();
     ~MainWindow();
 
+private:
+    void SetControlStatus(GuiControlStatus s);
+
+private:
+    virtual void closeEvent(QCloseEvent *);
+
 private slots:
     void on_pushButtonEnableVoltage_clicked();
 
     void on_pushButtonConnect_clicked();
 
+    void on_pushButtonDisconnect_clicked();
+
 public slots:
     void onConnectSuccessful();
     void onConnectFailed(const vsc::exception& e);
+    void onDisconnectSuccessful();
+    void onDisconnectFailed(const vsc::exception& e);
 
 private:
     Ui::MainWindow *ui;
     QPalette errorLabelPalette, normalLabelPalette;
     vsc::Controller *controller;
+    GuiControlStatus currentControlStatus;
 };

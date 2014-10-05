@@ -32,7 +32,7 @@ class VoltageSourceFactory {
 public:
     typedef std::shared_ptr<ThreadSafeVoltageSource> Pointer;
     typedef std::set<std::string> NameSet;
-    static Pointer Get();
+    static Pointer Create();
     static const NameSet& GetNames();
 
 private:

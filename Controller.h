@@ -34,7 +34,7 @@
 namespace vsc {
 class Controller {
 public:
-    enum Command { Exit, Connect, Disconnect, EnableVoltage, DisableVoltage };
+    enum class Command { Exit, Connect, Disconnect, EnableVoltage, DisableVoltage };
     typedef std::function<void (const IVoltageSource::Measurement&)> OnMeasurementCallback;
     typedef std::function<void (const vsc::exception&)> OnErrorCallback;
     typedef std::function<void ()> OnEventCallback;
@@ -56,6 +56,9 @@ public:
     void AddOnErrorCallback(const OnErrorCallback& callback) { AddCallback(onError, callback); }
     void AddOnConnectSuccessfulCallback(const OnEventCallback& callback) { AddCallback(onConnectSuccessful, callback); }
     void AddOnConnectFailedCallback(const OnErrorCallback& callback) { AddCallback(onConnectFailed, callback); }
+    void AddOnDisconnectSuccessfulCallback(const OnEventCallback& callback)
+                                                                      { AddCallback(onDisconnectSuccessful, callback); }
+    void AddOnDisconnectFailedCallback(const OnErrorCallback& callback) { AddCallback(onDisconnectFailed, callback); }
 
     void operator()();
     void SendCommand(Command command);
@@ -86,8 +89,8 @@ private:
 
 private:
     MeasurementCallbackVector onMeasurement, onCompliance;
-    ErrorCallbackVector onError, onConnectFailed;
-    EventCallbackVector onConnectSuccessful;
+    ErrorCallbackVector onError, onConnectFailed, onDisconnectFailed;
+    EventCallbackVector onConnectSuccessful, onDisconnectSuccessful;
     std::recursive_mutex mutex;
     std::condition_variable_any controlStateChange;
     std::queue<Command> commandQueue;

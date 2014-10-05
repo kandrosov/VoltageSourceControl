@@ -32,12 +32,20 @@ namespace vsc {
 
 class FakeVoltageSource : public IVoltageSource {
 public:
-    FakeVoltageSource(const Resistance& resistance, const Time& connection_delay, bool generate_connection_error)
-        : r(resistance), v(0.0 * volts)
+    FakeVoltageSource(const Resistance& resistance, const Time& _connectionDelay, bool generateConnectError,
+                      bool _generateDisconnectError, bool _generateMesureError)
+        : r(resistance), v(0.0 * volts), connectionDelay(_connectionDelay),
+          generateDisconnectError(_generateDisconnectError), generateMeasureError(_generateMesureError)
     {
-        Sleep(connection_delay);
-        if(generate_connection_error)
+        Sleep(connectionDelay);
+        if(generateConnectError)
             THROW_VSC_EXCEPTION("Connection error", "Fake connection error.");
+        LogDebug("FakeVoltageSource") << "Voltage source created.";
+    }
+
+    virtual ~FakeVoltageSource()
+    {
+        LogDebug("FakeVoltageSource") << "Voltage source destroyed.";
     }
 
     /// \copydoc IVoltageSource::Set
@@ -57,6 +65,8 @@ public:
 
     /// \copydoc IVoltageSource::Measure
     virtual IVoltageSource::Measurement Measure() {
+        if(generateMeasureError)
+            THROW_VSC_EXCEPTION("Communication error", "Fake measure error.");
         const ElectricCurrent i = v / r;
         const bool inCompliance = i >= compliance;
         const IVoltageSource::Measurement measurement(i, v, DateTimeProvider::ElapsedTime(), inCompliance);
@@ -66,6 +76,10 @@ public:
 
     /// \copydoc IVoltageSource::Off
     virtual void Off() {
+        Sleep(connectionDelay);
+        if(generateDisconnectError)
+            THROW_VSC_EXCEPTION("Connection error", "Fake disconnection error.");
+
         LogDebug("FakeVoltageSource") << "Turn off." << std::endl;
     }
 
@@ -73,6 +87,8 @@ private:
     vsc::Resistance r;
     vsc::ElectricPotential v;
     vsc::ElectricCurrent compliance;
+    vsc::Time connectionDelay;
+    bool generateDisconnectError, generateMeasureError;
 };
 
 } // vsc

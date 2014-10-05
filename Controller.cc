@@ -24,6 +24,7 @@
 
 #include <map>
 #include "Controller.h"
+#include "log.h"
 
 namespace vsc {
 
@@ -32,11 +33,11 @@ Controller::CommandHandler Controller::GetCommandHandler(Command command)
     typedef std::map<Command, CommandHandler> CommandMap;
     static CommandMap commandMap;
     if(!commandMap.size()) {
-        commandMap[Exit] = &Controller::doExit;
-        commandMap[Connect] = &Controller::doConnect;
-        commandMap[Disconnect] = &Controller::doDisconnect;
-        commandMap[EnableVoltage] = &Controller::doEnableVoltage;
-        commandMap[DisableVoltage] = &Controller::doDisableVoltage;
+        commandMap[Command::Exit] = &Controller::doExit;
+        commandMap[Command::Connect] = &Controller::doConnect;
+        commandMap[Command::Disconnect] = &Controller::doDisconnect;
+        commandMap[Command::EnableVoltage] = &Controller::doEnableVoltage;
+        commandMap[Command::DisableVoltage] = &Controller::doDisableVoltage;
     }
     return commandMap.at(command);
 }
@@ -50,6 +51,8 @@ Controller::~Controller()
     std::lock_guard<std::recursive_mutex> lock(mutex);
     if(isRunning)
         THROW_VSC_EXCEPTION("Internal error", "Invalid usage. The object should not be destroyed while working thread is still running.");
+    if(voltageSource)
+        THROW_VSC_EXCEPTION("Internal error", "Invalid usage. The object should not be destroyed while there is an active connection to the voltage source.");
 
 }
 
@@ -96,8 +99,13 @@ void Controller::doExit()
 
 void Controller::doConnect()
 {
+    if(voltageSource) {
+        const vsc::exception e("Controller", "Connection error", "Program is already connected to the voltage source");
+        Call(onConnectFailed, e);
+        return;
+    }
     try {
-        voltageSource = vsc::VoltageSourceFactory::Get();
+        voltageSource = vsc::VoltageSourceFactory::Create();
         Call(onConnectSuccessful);
     } catch(vsc::exception& e) {
         Call(onConnectFailed, e);
@@ -106,7 +114,14 @@ void Controller::doConnect()
 
 void Controller::doDisconnect()
 {
-
+    try {
+        if(voltageSource)
+            voltageSource->Off();
+        Call(onDisconnectSuccessful);
+    } catch(vsc::exception& e) {
+        Call(onDisconnectFailed, e);
+    }
+    voltageSource = VoltageSourcePtr();
 }
 
 void Controller::doEnableVoltage()
